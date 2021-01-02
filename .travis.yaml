@@ -1,0 +1,19 @@
+language: java
+jdk: oraclejdk8
+before_install:
+- chmod +x gradlew
+before_deploy:
+- chmod ugo+x deploy.sh
+script:
+- ./gradlew wrapper
+- ./gradlew clean build
+- ./gradlew warNoStatic warCopy zipGetVersion zipStatic
+- sh ./deploy_travisci.sh
+env:
+  global:
+  - GH_REF: github.com/garystafford/spring-music.git
+  - secure: <GH_TOKEN_secure_hash_here>
+  - secure: <COMMIT_AUTHOR_EMAIL_secure_hash_here>
+notifications:
+  slack:
+  - secure: <SLACK_secure_hash_here>

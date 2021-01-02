@@ -1,0 +1,46 @@
+version: '3.0'
+
+services:
+  # proxy:
+  #   build: nginx/
+  #   ports:
+  #   - 5001:80
+  #   command: nginx -g "daemon off;"
+  #   networks:
+  #   - net
+  #   depends_on:
+  #   - app
+  #   hostname: proxy
+  #   container_name: proxy
+
+  app:
+    build: .
+    working_dir: /usr/local/tomcat
+    command: catalina.sh run
+    ports:
+    - 5000:5000
+    networks:
+    - net
+    depends_on:
+    - db
+    hostname: app
+
+  db:
+    image: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    # ports:
+    #   - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD:  
+      MYSQL_DATABASE: movies
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+
+volumes:
+  db_data:
+
+networks:
+  net:
+    driver: bridge

@@ -1,0 +1,23 @@
+
+#impo11rt 
+FROM maven:3.5.2-jdk-8-alpine  as maven_builder
+# RUN apt-get update
+# RUN apt-get install -y maven
+COPY pom.xml /usr/local/service/
+# RUN mvn -B dependency:resolve dependency:resolve-plugins
+COPY src /usr/local/service/src
+WORKDIR   /usr/local/service
+CMD [ "/bin/bash" ]
+RUN mvn package
+# RUN ["mvn","clean","install","-X","-T","2C","-DskipTests=true"]
+
+
+FROM tomcat:8.5.4-jre8
+COPY --from=maven_builder /usr/local/service/target/devops-project-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/
+EXPOSE 5000
+CMD chmod +x /usr/local/tomcat/conf/tomcat-users.xml
+COPY tomcat-users.xml  /usr/local/tomcat/conf/
+COPY context.xml  /usr/local/tomcat/webapps/manager/META-INF
+CMD chmod +x /usr/local/tomcat/bin/catalina.sh
+CMD ["catalina.sh", "run"]
+
